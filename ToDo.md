@@ -8,10 +8,10 @@
 - [x] Histórico personal de acciones en cada tarjeta (Juego)
 - [x] Modificar interfaz - "Abandonar partida" oculto con icono 🚪, "Pagar" prominente, título centrado (Juego)
 - [x] Interfaz fija con scroll independiente para tarjetas de jugadores (Juego)
+- [x] Subir Aplicación a GitHub (App)
 
 ## En progreso
-- [ ] Subir Aplicación a GitHub (App)
+- [ ] Subir Aplicación a Vercel (App)
 
 ## En Pendiente
 - [ ] Modo claro/oscuro manual (Setup)
-- [ ] Subir Aplicación a Vercel (App)
