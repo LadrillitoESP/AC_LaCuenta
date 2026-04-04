@@ -1,6 +1,8 @@
 # AC_LaCuenta 🎮💰
 
-Una aplicación web moderna para dividir y gestionar cuentas de forma justa entre amigos, familia o compañeros. Perfecta para juegos de mesa, reuniones de amigos o cualquier ocasión donde necesites repartir gastos de manera equitativa.
+**Aplicación web para automatizar los cálculos del juego de mesa "La Cuenta"**
+
+Una aplicación interactiva y moderna diseñada específicamente para gestionar las partidas del juego de mesa **La Cuenta**. Automatiza la división de cuentas, gestión de cartas y seguimiento de saldos para que puedas enfocarte en disfrutar del juego con amigos, familia o compañeros de trabajo.
 
 ## ✨ Características
 
@@ -31,10 +33,30 @@ Dinero inicial automático basado en el número de jugadores:
 - **Saldo visible**: Monitorea el dinero de cada jugador en tiempo real
 - **Validaciones inteligentes**: El sistema valida que los +1 estén sincronizados con los pagadores
 
+### 📊 Historial y Seguimiento
+- **Historial de Transacciones**: Ver todas las rondas y pagos realizados con timestamps
+- **Histórico Personal**: Cada tarjeta muestra un resumen de pagos y cartas de cada jugador
+- **Contador de Rondas**: Acceso rápido al historial completo por ronda
+- **Nombres en Negrita**: Fácil identificación de quién pagó en cada ronda
+- **Cartas Anotadas**: Visualiza qué rondas tuvieron aumentos de cartas (+1)
+
+### ↩️ Sistema de Deshacer
+- **Deshacer Último Turno**: Revierte la última ronda completamente
+- **Restauración de Estado**: Recupera jugadores seleccionados, cartas y saldos anteriores
+- **Limpieza Automática**: Elimina transacciones de la ronda deshecha del historial personal
+- **Botón Siempre Disponible**: Acceso rápido a deshacer durante el juego
+
+### 💾 Persistencia Automática
+- **Guardado en localStorage**: Toda la partida se guarda automáticamente
+- **Carga al Reiniciar**: Continúa donde lo dejaste si refrescas la página
+- **Sincronización en Tiempo Real**: Cambios guardados inmediatamente
+- **Recuperación Completa**: Estado completo del juego, historial y selecciones se restauran
+
 ### 🏁 Final de Partida
 - Detección automática cuando un jugador llega a 0€ o menos
 - Pantalla de resumen con clasificación final
 - Opción para iniciar una nueva partida
+- Historial completo conservado hasta empezar nuevo juego
 
 ## 🛠️ Tecnologías
 
@@ -53,7 +75,7 @@ Dinero inicial automático basado en el número de jugadores:
 
 ```bash
 # Clonar el repositorio
-git clone <repository-url>
+git clone https://github.com/TU_USERNAME/AC_LaCuenta.git
 cd AC_LaCuenta
 
 # Instalar dependencias
@@ -91,13 +113,17 @@ npm run lint
 5. **Durante el juego**:
    - Haz clic en las tarjetas de los jugadores para seleccionarlos
    - Escribe la cantidad a repartir
-   - Haz clic en "Pagar"
+   - Haz clic en "Pagar" para completar la ronda
+   - Si necesitas corregir, usa el botón "Deshacer"
+   - Consulta el historial haciendo clic en el número de ronda
 6. **Fin automático**: La partida termina cuando alguien llegue a 0€
 
 ## 🎨 Diseño
 
 - Interfaz responsiva (funciona en móvil, tablet y escritorio)
-- Tema oscuro automático
+- Tema oscuro automático según preferencias del sistema
+- Tarjetas animadas que se expanden al seleccionar
+- Colores intuitivos: verde para dinero, rojo para advertencias, azul para acciones
 - Gradientes modernos y sombras elegantes
 - Colores intuitivos: verde para positivo, rojo para negativo
 
