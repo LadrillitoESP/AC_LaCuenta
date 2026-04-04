@@ -247,7 +247,6 @@ pagarCuenta() {
 
 **Herramientas:**
 - `eslint` (^9.39.4)
-- `vite-plugin-pwa` (^1.2.0)
 
 **Agregar nuevas dependencias solo si es crucial**
 
