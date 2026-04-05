@@ -358,7 +358,7 @@ function App() {
             <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
               Añadir jugadores ({jugadoresSetup.length}/8)
             </h2>
-            <div className="flex gap-2 mb-6">
+            <div className="flex flex-col sm:flex-row gap-2 mb-6">
               <input
                 type="text"
                 value={nombreNuevo}
@@ -369,7 +369,7 @@ function App() {
               />
               <button
                 onClick={agregarJugadorSetup}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition sm:w-auto w-full"
               >
                 Añadir
               </button>
