@@ -321,11 +321,18 @@ function App() {
     }
   }
 
-  const volverAlSetup = () => {
+  const abandonarPartida = () => {
     if (!confirm('¿Estás seguro de que quieres abandonar la partida?')) {
       return
     }
-    
+    limpiarYVolverAlSetup()
+  }
+
+  const nuevaPartida = () => {
+    limpiarYVolverAlSetup()
+  }
+
+  const limpiarYVolverAlSetup = () => {
     setPantalla('setup')
     setNombreNuevo('')
     setJugadores([])
@@ -336,7 +343,6 @@ function App() {
     setHistorialJuego([])
     setTransacciones([])
     setHistorialAbierto(false)
-    // Limpiar localStorage cuando se vuelve al setup
     localStorage.removeItem(STORAGE_KEY)
   }
 
@@ -449,7 +455,7 @@ function App() {
           </div>
 
           <button
-            onClick={volverAlSetup}
+            onClick={nuevaPartida}
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition text-lg"
           >
             Nueva partida
@@ -539,7 +545,7 @@ function App() {
             </div>
           </div>
           <button
-            onClick={volverAlSetup}
+            onClick={abandonarPartida}
             className="w-full max-w-4xl mx-auto bg-orange-400 hover:bg-orange-500 text-white font-bold py-3 px-4 rounded-lg transition mb-4"
             title="Abandonar partida"
           >

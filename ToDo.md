@@ -10,14 +10,14 @@
 - [x] Interfaz fija con scroll independiente para tarjetas de jugadores (Juego)
 - [x] Subir Aplicación a GitHub (App)
 - [x] Subir Aplicación a Vercel (App)
+- [x] Botón de añadir más jugadores que pueda entrar en pantallas más estrechas (Setup)
+- [x] El Botón de volver a jugar o nueva partida que te lleve al setup pero sin el popup de seguro que quieres abandonar la partida ? (Puntuaciones)
 
 ## En progreso
-- [ ] Botón de añadir más jugadores que pueda entrar en pantallas más estrechas (Setup)
+
 
 ## En Pendiente
 - [ ] Modo claro/oscuro manual (Setup)
-
-- [ ] El Botón de volver a jugar o nueva partida que te lleve al setup pero sin el popup de seguro que quieres abandonar la partida ? (Puntuaciones)
 
 - [ ] Popups propios dentro de la app, no usar las alertas de navegador por defecto (App)
 
