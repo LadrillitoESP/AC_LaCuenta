@@ -8,9 +8,23 @@ Este archivo define las normas de comportamiento, convenciones y directrices que
 ## 🎯 Principios Fundamentales
 
 1. **Mantén la arquitectura limpia**
-   - Un componente principal en `App.tsx` (por ahora)
-   - Separación clara de las 3 pantallas: setup, juego, fin
-   - Tipos bien definidos con interfaces TypeScript
+   - `App.tsx` solo elige la pantalla y gestiona los popups
+   - Toda la lógica y el estado del juego viven en el hook `usePartida`
+   - Un componente por pantalla: `PantallaSetup`, `PantallaJuego`, `PantallaFin`
+   - Tipos en `types.ts`, constantes en `constants.ts`, funciones puras en `utils/`
+
+   ```
+   src/
+   ├── App.tsx                  # Orquestador: pantalla actual + Modal
+   ├── types.ts                 # Interfaces (Jugador, EstadoPartida, ModalConfig...)
+   ├── constants.ts             # DINERO_INICIAL, límites, STORAGE_KEY
+   ├── hooks/usePartida.ts      # Estado + acciones del juego + persistencia
+   ├── utils/dinero.ts          # Cálculos en céntimos, parseo de importes
+   ├── utils/storage.ts         # Cargar/guardar/borrar en localStorage
+   ├── utils/estadisticas.ts    # Estadísticas de fin de partida
+   └── components/              # PantallaSetup, PantallaJuego, PantallaFin,
+                                # JugadorCard, HistorialTransacciones, Modal
+   ```
 
 2. **Código TypeScript strict**
    - Todos los valores deben estar tipados
@@ -26,11 +40,20 @@ Este archivo define las normas de comportamiento, convenciones y directrices que
    - Para funcionalidades simples usar `useState`
    - Si crece el proyecto, migrar a Context o Zustand
    - Comentar la lógica de estado compleja
-   - **localStorage**: Usar `useEffect` para guardar/cargar automáticamente
+   - **localStorage** (en `usePartida` + `utils/storage.ts`):
      - Key: `STORAGE_KEY` constante
      - Estructura: interfaz `EstadoPartida` tipada
-     - Cargar al montar, guardar en cada cambio
+     - Cargar en el inicializador de `useState` (NO en un `useEffect`: evita parpadeo y el error de lint `set-state-in-effect`)
+     - Guardar con `useEffect` en cada cambio
      - Limpiar cuando usuario vuelve al setup
+
+5. **Sin `alert` / `confirm` del navegador**
+   - Usar el componente `Modal` (`ModalConfig` en `types.ts`)
+   - Las acciones de `usePartida` que pueden fallar devuelven `string | null` (mensaje de error) y `App` lo muestra en un popup
+
+6. **Dinero siempre en céntimos exactos**
+   - Usar `calcularParte` y `restarEuros` de `utils/dinero.ts`, nunca `cantidad / n` directamente
+   - Eventos de teclado con `onKeyDown` (no `onKeyPress`, obsoleto)
 
 ---
 
@@ -100,8 +123,11 @@ interface EstadoPartida {
   seleccionados: string[]           // IDs de pagadores
   cantidadCuenta: string            // Importe a pagar
   jugadorQueAumentoMano: string | null
-  jugadorPerdedor: Jugador | null
+  historialJuego: HistorialSnapshot[] // Snapshots para deshacer
+  transacciones: Transaccion[]        // Historial visible
 }
+// Los perdedores NO se guardan: se derivan de jugadores con dinero <= 0
+// (puede haber varios en la misma ronda)
 ```
 
 ### Pantalla (Type)
@@ -165,36 +191,41 @@ const DINERO_INICIAL: Record<number, number> = {
 
 ### Lógica de División de Cuenta
 ```typescript
-const precioPorPersona = cantidad / seleccionados.length
+// Todos pagan lo mismo, redondeado hacia abajo al céntimo: 100€ entre 3 → 33.33€ cada uno
+// (los céntimos sobrantes no los paga nadie)
+const parte = calcularParte(cantidad, seleccionados.length)
 
-const nuevosJugadores = jugadores.map((j) => {
-  if (seleccionados.includes(j.id)) {
-    return { ...j, dinero: j.dinero - precioPorPersona }
-  }
-  return j
-})
+const nuevosJugadores = jugadores.map((j) =>
+  seleccionados.includes(j.id) ? { ...j, dinero: restarEuros(j.dinero, parte) } : j,
+)
 ```
 
 ### Sistema de Deshacer ⏮️
 - **Snapshot**: Se guarda estado completo ANTES de cada pago
-- **Restauración**: Botón "↩️ Deshacer" restaura último snapshot
+- **Restauración**: Botón "↩️ Deshacer" restaura último snapshot (también desde la pantalla de fin, volviendo al juego)
+- **Historial**: El deshacer se registra como entrada propia (`tipo: 'deshacer'`), en orden cronológico
 - **Limitaciones**: Solo se puede deshacer pagos, no selecciones de jugadores o cambios de cartas
 - **Persistencia**: El historial se guarda en localStorage
 
 ### Validaciones
-- ✅ Mínimo 3 jugadores, máximo 8
+- ✅ Mínimo 3 jugadores, máximo 8 (no se puede añadir un 9º; nombres duplicados avisan sin distinguir mayúsculas)
 - ✅ Cantidad a pagar: >= 0 (se permite 0€, no vacío ni negativo)
 - ✅ Al menos 1 jugador seleccionado
-- ✅ Jugador con 0€ o menos → fin de partida
-- ✅ Máximo 10 cartas por jugador
+- ✅ Jugador(es) con 0€ o menos → fin de partida (pueden perder varios a la vez)
+- ✅ Máximo 10 cartas por jugador: el botón muestra "Máx" y solo selecciona al jugador
 - ✅ Solo 1 aumento de cartas (+1) por ronda
 - ✅ Si hay un +1 activado, ese jugador DEBE estar seleccionado para pagar
 - ✅ Al deseleccionar un jugador con +1, se le quita automáticamente
-- ✅ Confirmación al abandonar partida (evita abandonos accidentales)
+- ✅ Confirmación al abandonar partida con popup propio (evita abandonos accidentales)
 
 ---
 
 ## 🔢 Contador y Historial
+
+### Pantalla de Fin
+- Clasificación: 🏆 todos los que conservan dinero (no hay un único ganador), 💸 perdedores, con total pagado, rondas pagadas y +1 pedidos
+- Estadísticas: rondas jugadas, total gastado, ronda más cara (calculada con los snapshots)
+- Botones: 🔁 Revancha (mismos jugadores, sin pasar por setup), ↩️ Deshacer último pago, Nueva partida
 
 ### Contador de Rondas
 - Muestra número actual de ronda (1, 2, 3...)
@@ -207,7 +238,7 @@ const nuevosJugadores = jugadores.map((j) => {
   - Nombres de pagadores
   - Monto total y por persona
   - Timestamp (HH:MM:SS)
-- Presentado como acordeón expandible
+- Presentado como panel desplegable al pulsar el contador de ronda (disponible desde la R1, aunque esté vacío, porque contiene el botón "Abandonar Partida")
 - Se guarda y restaura desde localStorage
 
 ### Lógica de Cartas (+1 por Ronda)
@@ -218,7 +249,7 @@ const aumentarCartas = (id: string) => {
   // Si ya tiene +1, toggle off (restar 1 carta)
   // Si otro tiene +1, quitárselo primero
   // Luego asignar el +1 al jugador actual
-  // Máximo 10 cartas
+  // Con 10 cartas (máximo): solo se selecciona, no suma carta
 }
 
 // Al pagar
@@ -287,5 +318,5 @@ Cuando hagas cambios importantes:
 
 ---
 
-**Última actualización**: 04/04/2026
+**Última actualización**: 20/11/2026
 **Aplicación**: AC_LaCuenta v1.0.0

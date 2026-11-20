@@ -8,7 +8,7 @@ Una aplicación interactiva y moderna diseñada específicamente para gestionar 
 
 ### 🎯 Fase de Setup
 - Crear una nueva partida agregando jugadores
-- Mínimo 3 jugadores, máximo 8
+- Mínimo 3 jugadores, máximo 8 (avisa si repites un nombre)
 - Interfaz simple para gestionar la lista de participantes
 - Validación automática de límites de jugadores
 
@@ -29,6 +29,10 @@ Dinero inicial automático basado en el número de jugadores:
   - **Auto-selección**: Al aumentar cartas, el jugador se añade automáticamente a los pagadores
 - **División proporcional**: Escribe la cantidad y el sistema divide automáticamente
 - **Vista previa en tiempo real**: Ve el cálculo antes de confirmar (cantidad ÷ seleccionados = por persona)
+- **Céntimos exactos**: 100€ entre 3 → 33,33€ cada uno (redondeo hacia abajo, sin errores de decimales)
+- **Rondas de 0€**: Se pueden registrar rondas sin coste
+- **Teclado numérico** en el móvil, acepta coma o punto decimal
+- **Máximo 10 cartas**: con 10 cartas el botón muestra "Máx" y solo selecciona al jugador
 - **Selección múltiple**: Elige entre quién dividir la cuenta
 - **Saldo visible**: Monitorea el dinero de cada jugador en tiempo real
 - **Validaciones inteligentes**: El sistema valida que los +1 estén sincronizados con los pagadores
@@ -53,10 +57,16 @@ Dinero inicial automático basado en el número de jugadores:
 - **Recuperación Completa**: Estado completo del juego, historial y selecciones se restauran
 
 ### 🏁 Final de Partida
-- Detección automática cuando un jugador llega a 0€ o menos
-- Pantalla de resumen con clasificación final
-- Opción para iniciar una nueva partida
-- Historial completo conservado hasta empezar nuevo juego
+- Detección automática cuando uno o varios jugadores llegan a 0€ o menos
+- Clasificación final: 🏆 ganan todos los que conservan dinero, 💸 perdedores
+- Estadísticas: total pagado por jugador, rondas pagadas, +1 pedidos, rondas jugadas, total gastado y ronda más cara
+- **↩️ Deshacer último pago**: si te equivocaste al teclear el importe, vuelve a la partida
+- **🔁 Revancha**: nueva partida al momento con los mismos jugadores
+- **Nueva partida**: vuelve al setup
+
+### 📱 App instalable
+- Icono propio y manifest: "Añadir a pantalla de inicio" en el móvil y se abre a pantalla completa
+- Popups propios en lugar de las alertas del navegador
 
 ## 🛠️ Tecnologías
 
@@ -131,11 +141,26 @@ npm run lint
 
 ```
 src/
-├── App.tsx          # Componente principal con toda la lógica
-├── App.css          # Estilos específicos de la app
-├── main.tsx         # Punto de entrada
-├── index.css        # Estilos globales
-└── vite-env.d.ts    # Tipos para Vite
+├── App.tsx                  # Orquestador: pantalla actual + popups
+├── main.tsx                 # Punto de entrada
+├── index.css                # Estilos globales (Tailwind)
+├── types.ts                 # Interfaces TypeScript
+├── constants.ts             # Dinero inicial, límites, clave de storage
+├── hooks/
+│   └── usePartida.ts        # Estado y lógica del juego + persistencia
+├── utils/
+│   ├── dinero.ts            # Cálculos en céntimos
+│   ├── storage.ts           # localStorage
+│   └── estadisticas.ts      # Estadísticas de fin de partida
+└── components/
+    ├── PantallaSetup.tsx
+    ├── PantallaJuego.tsx
+    ├── PantallaFin.tsx
+    ├── JugadorCard.tsx
+    ├── HistorialTransacciones.tsx
+    └── Modal.tsx
+
+public/                      # Icono (svg/png) y manifest.webmanifest
 
 root/
 ├── package.json     # Dependencias del proyecto
