@@ -183,7 +183,7 @@ const nuevosJugadores = jugadores.map((j) => {
 
 ### Validaciones
 - ✅ Mínimo 3 jugadores, máximo 8
-- ✅ Cantidad a pagar: > 0
+- ✅ Cantidad a pagar: >= 0 (se permite 0€, no vacío ni negativo)
 - ✅ Al menos 1 jugador seleccionado
 - ✅ Jugador con 0€ o menos → fin de partida
 - ✅ Máximo 10 cartas por jugador

@@ -240,7 +240,8 @@ function App() {
   const pagarCuenta = () => {
     const cantidad = parseFloat(cantidadCuenta)
     
-    if (!cantidad || cantidad <= 0) {
+    // Se permite 0€ (ronda sin coste), pero no vacío, negativo ni NaN
+    if (cantidadCuenta.trim() === '' || isNaN(cantidad) || cantidad < 0) {
       alert('Introduce una cantidad válida')
       return
     }

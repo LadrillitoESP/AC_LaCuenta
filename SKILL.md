@@ -144,7 +144,7 @@ const nuevosJugadores = jugadores.map((j) => {
 
 ## validations
 - ✅ Min 3 players, max 8
-- ✅ Bill amount > 0
+- ✅ Bill amount >= 0 (0€ allowed; empty or negative rejected)
 - ✅ At least 1 player selected to pay
 - ✅ Player with ≤0€ ends game
 - ✅ Max 10 cards per player
